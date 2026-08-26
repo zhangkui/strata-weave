@@ -11,16 +11,15 @@
 
 ## 仓库与环境（v2：repo_url）
 分支模型: orphan-redgreen
-绿测分支: bug11_green
 红测分支: bug11_red
 基线提交: 84d35d7513deba9a9a83d9797e1d6b239c6f2f4c
 
 | 字段 | 值 |
 |---|---|
-| repo_url | https://github.com/zhangkui/strata-weave/tree/bug11_green |
-| base_branch | 见上方绿测分支/红测分支/基线提交四行字段 |
+| repo_url | https://github.com/zhangkui/strata-weave/tree/bug11_red |
+| base_branch | 见上方分支字段和基线提交 |
 | green_branch 语义 | **初始化时的未修复问题基线，不是修复完成代码** |
-| agent workspace | **固定：`F:\skillxm12\strata-weave-bug-011-green`**（**执行端按需 clone** `bug11_green` 后 `git remote remove origin`；create 端不预建） |
+| agent workspace | **固定：`F:\skillxm12\strata-weave-bug-011-red`**（**执行端按需 clone** `bug11_red` 后 `git remote remove origin`；create 端不预建） |
 | 准备命令 | 见下方详细步骤 |
 | go_version | go1.22 windows/amd64 (GOTOOLCHAIN=local) |
 | harness | <执行端环境，**执行后填**> |
@@ -28,8 +27,8 @@
 #### 准备命令详情（固定工作区 `F:\skillxm12`，本机 Git Bash 执行）
 > 交付快照=单分支单提交：clone 后必须移除 remote（模型不可见其他分支/答案）。
 ```bash
-git clone --single-branch -b bug11_green https://github.com/zhangkui/strata-weave.git F:\skillxm12/strata-weave-bug-011-green
-cd F:\skillxm12/strata-weave-bug-011-green
+git clone --single-branch -b bug11_red https://github.com/zhangkui/strata-weave.git F:\skillxm12/strata-weave-bug-011-red
+cd F:\skillxm12/strata-weave-bug-011-red
 git remote remove origin
 git log --oneline --all   # 自检：必须只有 1 行（G1）
 export GOTOOLCHAIN=local
@@ -42,9 +41,9 @@ go test ./...       # 复现/回归
 请定位重复送检时状态机错误传播为何丢失。不要修改代码，只分析持久化错误到服务调用链的包装方式和对重试策略的影响。
 
 ## 验证命令（verify_cmds）
-> ⚠️ **go test 格式（2026-08-22 用户规则，D-054 v2）**：回归测试文件在出题侧 `cases/bug-00N/regression/`，create 阶段不提交测试到 green/red；collect 在 test 轨迹验收后才把对应公开测试落位到验证环境。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`，D-008）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**，验收方在测试落位后的干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
+> ⚠️ **go test 格式**：目标测试在初始化时已提交到 Red/Green 分支；后续流程不得从 `cases/` 注入、复制或提交测试。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**；验收方在干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
 ```bash
-go test ./cases/bug-011/regression -count=1 -run '^TestBug011_DispatchTransitionKeepsStateCause$'
+go test ./internal/regression -count=1 -run '^TestBug011_DispatchTransitionKeepsStateCause$'
 ```
 
 ## 参考答案（整理端质检用，严禁交给执行模型）

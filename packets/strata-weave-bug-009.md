@@ -18,7 +18,7 @@
 | 字段 | 值 |
 |---|---|
 | repo_url | https://github.com/zhangkui/strata-weave/tree/bug9_green |
-| base_branch | 见上方绿测分支/红测分支/基线提交四行字段 |
+| base_branch | 见上方分支字段和基线提交 |
 | green_branch 语义 | **初始化时的未修复问题基线，不是修复完成代码** |
 | agent workspace | **固定：`F:\skillxm12\strata-weave-bug-009-green`**（**执行端按需 clone** `bug9_green` 后 `git remote remove origin`；create 端不预建） |
 | 准备命令 | 见下方详细步骤 |
@@ -42,9 +42,9 @@ go test ./...       # 复现/回归
 样本送检请求在离线切换时已取消，但 context 没有贯穿送检持久化，样本仍可能离开现场链路。请修复送检流程的取消传播。
 
 ## 验证命令（verify_cmds）
-> ⚠️ **go test 格式（2026-08-22 用户规则，D-054 v2）**：回归测试文件在出题侧 `cases/bug-00N/regression/`，create 阶段不提交测试到 green/red；collect 在 test 轨迹验收后才把对应公开测试落位到验证环境。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`，D-008）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**，验收方在测试落位后的干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
+> ⚠️ **go test 格式**：目标测试在初始化时已提交到 Red/Green 分支；后续流程不得从 `cases/` 注入、复制或提交测试。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**；验收方在干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
 ```bash
-go test ./cases/bug-009/regression -count=1 -run '^TestBug009_CanceledDispatchDoesNotLeaveSite$'
+go test ./internal/regression -count=1 -run '^TestBug009_CanceledDispatchDoesNotLeaveSite$'
 ```
 
 ## 参考答案（整理端质检用，严禁交给执行模型）

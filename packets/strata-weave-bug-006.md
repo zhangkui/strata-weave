@@ -18,7 +18,7 @@
 | 字段 | 值 |
 |---|---|
 | repo_url | https://github.com/zhangkui/strata-weave/tree/bug6_green |
-| base_branch | 见上方绿测分支/红测分支/基线提交四行字段 |
+| base_branch | 见上方分支字段和基线提交 |
 | green_branch 语义 | **初始化时的未修复问题基线，不是修复完成代码** |
 | agent workspace | **固定：`F:\skillxm12\strata-weave-bug-006-green`**（**执行端按需 clone** `bug6_green` 后 `git remote remove origin`；create 端不预建） |
 | 准备命令 | 见下方详细步骤 |
@@ -42,9 +42,9 @@ go test ./...       # 复现/回归
 两名考古员同时提交相反方向的地层先后关系，环检测和写入之间存在并发竞态，Harris 矩阵可能形成环。请修复关系校验与提交的原子性。
 
 ## 验证命令（verify_cmds）
-> ⚠️ **go test 格式（2026-08-22 用户规则，D-054 v2）**：回归测试文件在出题侧 `cases/bug-00N/regression/`，create 阶段不提交测试到 green/red；collect 在 test 轨迹验收后才把对应公开测试落位到验证环境。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`，D-008）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**，验收方在测试落位后的干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
+> ⚠️ **go test 格式**：目标测试在初始化时已提交到 Red/Green 分支；后续流程不得从 `cases/` 注入、复制或提交测试。verify_cmds 每行 = 一条纯 go test 命令 `go test [flags] <包路径> -count=N -run '^TestBugNN_XXX$'`（并发题目标测试行加 `-race`）。**禁止 heredoc（cat > <<'GOEOF'）/docker run/bash *.sh/cp/base64**；验收方在干净 checkout 直接执行即可复现红绿。示例（**直接照抄形态，不带任何前缀标签**）：
 ```bash
-go test -race ./cases/bug-006/regression -count=20 -run '^TestBug006_ConcurrentRelationsMustNotCloseCycle$'
+go test -race ./internal/regression -count=20 -run '^TestBug006_ConcurrentRelationsMustNotCloseCycle$'
 ```
 
 ## 参考答案（整理端质检用，严禁交给执行模型）

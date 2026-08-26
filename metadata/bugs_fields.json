@@ -13,7 +13,7 @@
       "branch_model": "orphan-redgreen",
       "g1_sha": "bf17f4c03e47f43a76dd1a55dc993faa015a50fd",
       "user_query": "现场人员会并发写入同一探方的遥测读数，监测屏幕同时刷新地层观测快照时出现并发竞态。请修复遥测账本的并发访问，使读写不会污染现场读数。",
-      "verify_cmds": "go test -race ./internal/regression -count=20 -run '^TestBug001_TelemetryLedgerConcurrentSnapshot$'",
+      "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug001_TelemetryLedgerConcurrentSnapshot$'",
       "success_criteria": "目标行为：遥测写入和快照读取可同时执行且数据完整。\n边界：同一探方连续上报、空快照和关闭状态仍保持原有校验。\n合法场景：多名记录员并发录入高程时不丢失已接受读数。\n验证标准：修复后竞态检测命令成功；修复前应稳定报告竞态。"
     },
     {
@@ -28,7 +28,7 @@
       "branch_model": "orphan-redgreen",
       "g1_sha": "02e4cf41217642900d139609c76702ae2a18fd9e",
       "user_query": "同一份现场记录被多个终端同时提交复核时，复核队列出现并发竞态，可能重复登记或破坏队列索引。请修复提交和排队之间的并发一致性。",
-      "verify_cmds": "go test -race ./internal/regression -count=20 -run '^TestBug002_ReviewQueueConcurrentSubmission$'",
+      "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug002_ReviewQueueConcurrentSubmission$'",
       "success_criteria": "目标行为：并发提交同一记录不会破坏复核队列。\n边界：重复提交仍按既有状态机拒绝，首次提交可进入队列。\n合法场景：网络重试与人工提交同时到达时队列保持可用。\n验证标准：修复后竞态检测成功；修复前应稳定报告竞态。"
     },
     {
@@ -43,7 +43,7 @@
       "branch_model": "orphan-redgreen",
       "g1_sha": "1bc928224a38cb946de921a5a193e29662087439",
       "user_query": "实验样本在集中采集时会并发建立送检追踪状态，追踪器发生并发竞态，导致样本链路状态不可靠。请修复采集入库与运行时追踪之间的并发保护。",
-      "verify_cmds": "go test -race ./internal/regression -count=20 -run '^TestBug003_DispatchTrackerConcurrentCollection$'",
+      "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug003_DispatchTrackerConcurrentCollection$'",
       "success_criteria": "目标行为：并发采集的每个样本都拥有独立且正确的追踪状态。\n边界：父遗物不存在或样本字段非法时仍不得建立有效状态。\n合法场景：批量采集多个已复核遗物时全部可继续送检。\n验证标准：修复后竞态检测成功；修复前应稳定报告竞态。"
     },
     {
@@ -58,7 +58,7 @@
       "branch_model": "orphan-redgreen",
       "g1_sha": "a85bf7cfead35ecbcc4a9abf6ad3e52c0d3b6dfb",
       "user_query": "雨水渗入告警由多台现场设备同时创建，内存告警账本在并发合并时发生竞态。请修复告警持久化和实时告警视图的并发协作。",
-      "verify_cmds": "go test -race ./internal/regression -count=20 -run '^TestBug004_AlertLedgerConcurrentCreation$'",
+      "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug004_AlertLedgerConcurrentCreation$'",
       "success_criteria": "目标行为：并发创建告警后实时告警视图完整且不发生竞态。\n边界：重复编号仍受持久化唯一性约束，非法告警不可进入账本。\n合法场景：多个探方同时上报高等级风险时均能记录。\n验证标准：修复后竞态检测成功；修复前应稳定报告竞态。"
     },
     {
@@ -73,7 +73,7 @@
       "branch_model": "orphan-redgreen",
       "g1_sha": "74e6a8b2b759917991b94bdd5d851198f74c5201",
       "user_query": "无人机批量导入观测数据时，记录员仍会补录单条高程，二者共享遥测账本并触发并发竞态。请修复批量导入与单条录入的实时数据访问。",
-      "verify_cmds": "go test -race ./internal/regression -count=20 -run '^TestBug005_BatchAndSingleTelemetryShareLedger$'",
+      "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug005_BatchAndSingleTelemetryShareLedger$'",
       "success_criteria": "目标行为：批量和单条观测并发执行时账本快照保持一致。\n边界：批量内的无效行仍保留原有错误处理，单条数据不被覆盖。\n合法场景：导入期间人工补测高程可安全保存。\n验证标准：修复后竞态检测成功；修复前应稳定报告竞态。"
     },
     {
@@ -142,7 +142,7 @@
       "task_type": "diagnosis",
       "bug_category": "error异常错误",
       "repro_determinism": "stable-assertion",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug10_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug10_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
@@ -158,7 +158,7 @@
       "task_type": "diagnosis",
       "bug_category": "error异常错误",
       "repro_determinism": "stable-assertion",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug11_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug11_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
@@ -174,7 +174,7 @@
       "task_type": "diagnosis",
       "bug_category": "其他问题",
       "repro_determinism": "stable-assertion",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug12_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug12_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
@@ -190,7 +190,7 @@
       "task_type": "diagnosis",
       "bug_category": "其他问题",
       "repro_determinism": "stable-assertion",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug13_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug13_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
@@ -206,7 +206,7 @@
       "task_type": "diagnosis",
       "bug_category": "nil相关问题",
       "repro_determinism": "stable-panic",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug14_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug14_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
@@ -222,7 +222,7 @@
       "task_type": "diagnosis",
       "bug_category": "其他问题",
       "repro_determinism": "stable-assertion",
-      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug15_green",
+      "repo_url": "https://github.com/zhangkui/strata-weave/tree/bug15_red",
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
