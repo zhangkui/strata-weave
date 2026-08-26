@@ -142,7 +142,10 @@ func (s *Service) CreateSample(_ context.Context, sample model.Sample) (model.Sa
 	}
 	return sample, s.dispatch.Transition(sample.ID, model.SampleCollected, sample.CollectedAt)
 }
-func (s *Service) DispatchSample(_ context.Context, id, lab string) error {
+func (s *Service) DispatchSample(ctx context.Context, id, lab string) error {
+	if err := ContextCheckpoint(ctx, "dispatch sample"); err != nil {
+		return err
+	}
 	sample, e := store.GetSample(s.db, id)
 	if e != nil {
 		return e
@@ -162,7 +165,10 @@ func (s *Service) DispatchSample(_ context.Context, id, lab string) error {
 	}
 	return s.dispatch.Transition(id, model.SampleDispatched, now())
 }
-func (s *Service) ReportSample(_ context.Context, id, method string, age, errorBP float64) error {
+func (s *Service) ReportSample(ctx context.Context, id, method string, age, errorBP float64) error {
+	if err := ContextCheckpoint(ctx, "report sample"); err != nil {
+		return err
+	}
 	if method == "" || age < 0 || errorBP < 0 {
 		return model.ErrInvalidInput
 	}
@@ -196,7 +202,10 @@ func (s *Service) SubmitRecord(ctx context.Context, id string) error {
 	}
 	return s.reviews.Enqueue(id, now())
 }
-func (s *Service) ReviewRecord(_ context.Context, id string, approved bool, note string) error {
+func (s *Service) ReviewRecord(ctx context.Context, id string, approved bool, note string) error {
+	if err := ContextCheckpoint(ctx, "review record"); err != nil {
+		return err
+	}
 	status := model.RecordRejected
 	if approved {
 		status = model.RecordReviewed

@@ -27,6 +27,9 @@ func ValidateSample(s Sample) error {
 	if s.FindID == "" || strings.TrimSpace(s.Label) == "" {
 		return ErrInvalidInput
 	}
+	if s.Status != "" && s.Status != SampleCollected {
+		return ErrInvalidState
+	}
 	if s.CollectedAt.IsZero() {
 		s.CollectedAt = time.Now()
 	}
