@@ -12,12 +12,13 @@ import (
 )
 
 type Service struct {
-	db       *sql.DB
-	importMu sync.Mutex
-	ledger   *TelemetryLedger
-	reviews  *ReviewQueue
-	dispatch *DispatchTracker
-	alerts   *AlertLedger
+	db         *sql.DB
+	importMu   sync.Mutex
+	relationMu sync.Mutex
+	ledger     *TelemetryLedger
+	reviews    *ReviewQueue
+	dispatch   *DispatchTracker
+	alerts     *AlertLedger
 }
 
 func New(db *sql.DB) *Service {
@@ -72,6 +73,8 @@ func (s *Service) AdvanceUnit(_ context.Context, id string, next int) error {
 }
 
 func (s *Service) AddStratigraphicRelation(_ context.Context, r model.Relation) (model.Relation, error) {
+	s.relationMu.Lock()
+	defer s.relationMu.Unlock()
 	if r.EarlierID == r.LaterID {
 		return r, model.ErrCycle
 	}
@@ -280,6 +283,14 @@ func (s *Service) IngestBatch(ctx context.Context, items []model.Observation) (i
 func (s *Service) ListObservations(_ context.Context, f model.ObservationFilter) ([]model.Observation, error) {
 	return store.ListObservations(s.db, f)
 }
+
+// TelemetrySnapshot exposes an immutable operational view for field monitors.
+func (s *Service) TelemetrySnapshot(unitID string) []model.Observation {
+	return s.ledger.Snapshot(unitID)
+}
+
+// PendingReviewIDs provides the review desk with outstanding record identifiers.
+func (s *Service) PendingReviewIDs() []string { return s.reviews.Pending() }
 func (s *Service) CreateAlert(_ context.Context, a model.Alert) (model.Alert, error) {
 	if a.UnitID == "" || a.Message == "" || a.Severity == "" {
 		return a, model.ErrInvalidInput
@@ -316,6 +327,9 @@ func (s *Service) CloseAlert(_ context.Context, id string) error {
 	a.Status = "closed"
 	return s.alerts.Upsert(a)
 }
+
+// ActiveRuntimeAlerts exposes the in-process alert feed used by live monitors.
+func (s *Service) ActiveRuntimeAlerts() []model.Alert { return s.alerts.Active() }
 func (s *Service) Dashboard(_ context.Context) (model.Dashboard, error) {
 	var d model.Dashboard
 	e := s.db.QueryRow(`SELECT (SELECT count(*) FROM trenches),(SELECT count(*) FROM units WHERE phase<5),(SELECT count(*) FROM records WHERE status='submitted'),(SELECT count(*) FROM alerts WHERE status='open'),(SELECT count(*) FROM samples WHERE status='dispatched')`).Scan(&d.Trenches, &d.OpenUnits, &d.PendingReviews, &d.ActiveAlerts, &d.SamplesInLab)
