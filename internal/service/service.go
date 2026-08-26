@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -208,6 +209,9 @@ func (s *Service) SubmitRecord(ctx context.Context, id string) error {
 func (s *Service) ReviewRecord(ctx context.Context, id string, approved bool, note string) error {
 	if err := ContextCheckpoint(ctx, "review record"); err != nil {
 		return err
+	}
+	if strings.TrimSpace(note) == "" {
+		return model.ErrInvalidInput
 	}
 	status := model.RecordRejected
 	if approved {
