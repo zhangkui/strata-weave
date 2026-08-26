@@ -13,7 +13,7 @@
 分支模型: orphan-redgreen
 绿测分支: bug4_green
 红测分支: bug4_red
-基线提交: a85bf7cfead35ecbcc4a9abf6ad3e52c0d3b6dfb
+基线提交: 6af3c271ea0c338825a079561274c5dbde301b1c
 
 | 字段 | 值 |
 |---|---|

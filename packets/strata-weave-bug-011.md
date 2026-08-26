@@ -12,7 +12,7 @@
 ## 仓库与环境（v2：repo_url）
 分支模型: orphan-redgreen
 红测分支: bug11_red
-基线提交: 84d35d7513deba9a9a83d9797e1d6b239c6f2f4c
+基线提交: ebd3b6e952bc38c4ee8b498f90b99e8e934a6ad5
 
 | 字段 | 值 |
 |---|---|

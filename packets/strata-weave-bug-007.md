@@ -13,7 +13,7 @@
 分支模型: orphan-redgreen
 绿测分支: bug7_green
 红测分支: bug7_red
-基线提交: 992f71b4b0bd7fbe9fe76626004ea7648e094ed6
+基线提交: 7114be7c7fb1ab9c6da47edacd979c91a992ac67
 
 | 字段 | 值 |
 |---|---|
