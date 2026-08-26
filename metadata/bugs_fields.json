@@ -11,7 +11,7 @@
       "go_version": "go1.22 windows/amd64 (GOTOOLCHAIN=local)",
       "workspace_root": "F:\\skillxm12",
       "branch_model": "orphan-redgreen",
-      "g1_sha": "0dafd4015e071846cde85ee1e0dd2fc9588580c1",
+      "g1_sha": "cd82ae811a2eb26434e2be98642eaddcbb5d739a",
       "user_query": "现场人员会并发写入同一探方的遥测读数，监测屏幕同时刷新地层观测快照时出现并发竞态。请修复遥测账本的并发访问，使读写不会污染现场读数。",
       "verify_cmds": "go test -race ./internal/service -count=20 -run '^TestBug001_TelemetryLedgerConcurrentSnapshot$'",
       "success_criteria": "目标行为：遥测写入和快照读取可同时执行且数据完整。\n边界：同一探方连续上报、空快照和关闭状态仍保持原有校验。\n合法场景：多名记录员并发录入高程时不丢失已接受读数。\n验证标准：修复后竞态检测命令成功；修复前应稳定报告竞态。"

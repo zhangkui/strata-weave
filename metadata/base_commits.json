@@ -6,7 +6,7 @@
       "task_type": "bugfix",
       "green_branch": "bug1_green",
       "red_branch": "bug1_red",
-      "g1_sha": "0dafd4015e071846cde85ee1e0dd2fc9588580c1"
+      "g1_sha": "cd82ae811a2eb26434e2be98642eaddcbb5d739a"
     },
     "2": {
       "task_type": "bugfix",
