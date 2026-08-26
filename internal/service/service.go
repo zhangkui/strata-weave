@@ -14,9 +14,15 @@ import (
 type Service struct {
 	db       *sql.DB
 	importMu sync.Mutex
+	ledger   *TelemetryLedger
+	reviews  *ReviewQueue
+	dispatch *DispatchTracker
+	alerts   *AlertLedger
 }
 
-func New(db *sql.DB) *Service { return &Service{db: db} }
+func New(db *sql.DB) *Service {
+	return &Service{db: db, ledger: NewTelemetryLedger(), reviews: NewReviewQueue(), dispatch: NewDispatchTracker(), alerts: NewAlertLedger()}
+}
 func id(prefix string) string { return fmt.Sprintf("%s-%d", prefix, time.Now().UnixNano()) }
 func now() time.Time          { return time.Now().UTC() }
 
@@ -131,7 +137,10 @@ func (s *Service) CreateSample(_ context.Context, sample model.Sample) (model.Sa
 	if sample.Status == "" {
 		sample.Status = model.SampleCollected
 	}
-	return sample, store.CreateSample(s.db, sample)
+	if err := store.CreateSample(s.db, sample); err != nil {
+		return sample, err
+	}
+	return sample, s.dispatch.Transition(sample.ID, model.SampleCollected, sample.CollectedAt)
 }
 func (s *Service) DispatchSample(_ context.Context, id, lab string) error {
 	sample, e := store.GetSample(s.db, id)
@@ -148,13 +157,19 @@ func (s *Service) DispatchSample(_ context.Context, id, lab string) error {
 	if lab == "" {
 		return model.ErrInvalidInput
 	}
-	return store.DispatchSample(s.db, id, lab)
+	if err := store.DispatchSample(s.db, id, lab); err != nil {
+		return err
+	}
+	return s.dispatch.Transition(id, model.SampleDispatched, now())
 }
 func (s *Service) ReportSample(_ context.Context, id, method string, age, errorBP float64) error {
 	if method == "" || age < 0 || errorBP < 0 {
 		return model.ErrInvalidInput
 	}
-	return store.ReportSample(s.db, id, method, age, errorBP, now().Format(time.RFC3339Nano))
+	if err := store.ReportSample(s.db, id, method, age, errorBP, now().Format(time.RFC3339Nano)); err != nil {
+		return err
+	}
+	return s.dispatch.Transition(id, model.SampleReported, now())
 }
 
 func (s *Service) CreateRecord(_ context.Context, r model.FieldRecord) (model.FieldRecord, error) {
@@ -172,21 +187,36 @@ func (s *Service) CreateRecord(_ context.Context, r model.FieldRecord) (model.Fi
 	}
 	return r, store.CreateFieldRecord(s.db, r)
 }
-func (s *Service) SubmitRecord(_ context.Context, id string) error {
-	return store.SubmitRecord(s.db, id, now().Format(time.RFC3339Nano))
+func (s *Service) SubmitRecord(ctx context.Context, id string) error {
+	if err := ContextCheckpoint(ctx, "submit record"); err != nil {
+		return err
+	}
+	if err := store.SubmitRecord(s.db, id, now().Format(time.RFC3339Nano)); err != nil {
+		return err
+	}
+	return s.reviews.Enqueue(id, now())
 }
 func (s *Service) ReviewRecord(_ context.Context, id string, approved bool, note string) error {
 	status := model.RecordRejected
 	if approved {
 		status = model.RecordReviewed
 	}
-	return store.ReviewRecord(s.db, id, status, note, now().Format(time.RFC3339Nano))
+	if err := s.reviews.Claim(id, "reviewer"); err != nil {
+		return err
+	}
+	if err := store.ReviewRecord(s.db, id, status, note, now().Format(time.RFC3339Nano)); err != nil {
+		return err
+	}
+	return s.reviews.Complete(id)
 }
 func (s *Service) ListRecords(_ context.Context, f model.RecordFilter) ([]model.FieldRecord, error) {
 	return store.ListRecords(s.db, f)
 }
 
-func (s *Service) IngestObservation(_ context.Context, o model.Observation) error {
+func (s *Service) IngestObservation(ctx context.Context, o model.Observation) error {
+	if err := ContextCheckpoint(ctx, "ingest observation"); err != nil {
+		return err
+	}
 	if e := model.ValidateObservation(o); e != nil {
 		return e
 	}
@@ -199,7 +229,10 @@ func (s *Service) IngestObservation(_ context.Context, o model.Observation) erro
 	if o.Quality == "" {
 		o.Quality = "unverified"
 	}
-	return store.InsertObservation(s.db, o)
+	if err := store.InsertObservation(s.db, o); err != nil {
+		return err
+	}
+	return s.ledger.Record(o)
 }
 func (s *Service) IngestBatch(ctx context.Context, items []model.Observation) (int, []error) {
 	s.importMu.Lock()
@@ -225,8 +258,13 @@ func (s *Service) IngestBatch(ctx context.Context, items []model.Observation) (i
 		}
 		accepted = append(accepted, o)
 	}
-	if e := store.InsertObservationsTx(s.db, accepted); e != nil {
+	if e := store.InsertObservationsTxContext(ctx, s.db, accepted); e != nil {
 		return 0, []error{e}
+	}
+	for _, item := range accepted {
+		if err := s.ledger.Record(item); err != nil {
+			return 0, []error{err}
+		}
 	}
 	return len(accepted), errs
 }
@@ -250,13 +288,24 @@ func (s *Service) CreateAlert(_ context.Context, a model.Alert) (model.Alert, er
 		t := now()
 		a.CreatedAt = &t
 	}
-	return a, store.CreateAlert(s.db, a)
+	if err := store.CreateAlert(s.db, a); err != nil {
+		return a, err
+	}
+	return a, s.alerts.Upsert(a)
 }
 func (s *Service) ListAlerts(_ context.Context, f model.AlertFilter) ([]model.Alert, error) {
 	return store.ListAlerts(s.db, f)
 }
 func (s *Service) CloseAlert(_ context.Context, id string) error {
-	return store.CloseAlert(s.db, id, now().Format(time.RFC3339Nano))
+	if err := store.CloseAlert(s.db, id, now().Format(time.RFC3339Nano)); err != nil {
+		return err
+	}
+	a, err := s.alerts.Get(id)
+	if err != nil {
+		return err
+	}
+	a.Status = "closed"
+	return s.alerts.Upsert(a)
 }
 func (s *Service) Dashboard(_ context.Context) (model.Dashboard, error) {
 	var d model.Dashboard

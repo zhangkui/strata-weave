@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"strata-weave/internal/model"
 )
@@ -56,6 +57,27 @@ func InsertObservationsTx(db *sql.DB, items []model.Observation) error {
 		if _, e = tx.Exec(`INSERT INTO observations(id,unit_id,instrument,metric,value,observed_at,quality) VALUES(?,?,?,?,?,?,?)`, o.ID, o.UnitID, o.Instrument, o.Metric, o.Value, stamp(o.At), o.Quality); e != nil {
 			tx.Rollback()
 			return e
+		}
+	}
+	return tx.Commit()
+}
+
+func InsertObservationsTxContext(ctx context.Context, db *sql.DB, items []model.Observation) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	for _, o := range items {
+		if err := ctx.Err(); err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+		if _, err = tx.ExecContext(ctx, `INSERT INTO observations(id,unit_id,instrument,metric,value,observed_at,quality) VALUES(?,?,?,?,?,?,?)`, o.ID, o.UnitID, o.Instrument, o.Metric, o.Value, stamp(o.At), o.Quality); err != nil {
+			_ = tx.Rollback()
+			return err
 		}
 	}
 	return tx.Commit()
