@@ -1,5 +1,81 @@
 {
   "project": "strata-weave",
   "branch_model": "orphan-redgreen",
-  "bugs": {}
+  "bugs": {
+    "1": {
+      "green_branch": "bug1_green",
+      "red_branch": "bug1_red",
+      "g1_sha": "bf17f4c03e47f43a76dd1a55dc993faa015a50fd"
+    },
+    "2": {
+      "green_branch": "bug2_green",
+      "red_branch": "bug2_red",
+      "g1_sha": "02e4cf41217642900d139609c76702ae2a18fd9e"
+    },
+    "3": {
+      "green_branch": "bug3_green",
+      "red_branch": "bug3_red",
+      "g1_sha": "1bc928224a38cb946de921a5a193e29662087439"
+    },
+    "4": {
+      "green_branch": "bug4_green",
+      "red_branch": "bug4_red",
+      "g1_sha": "a85bf7cfead35ecbcc4a9abf6ad3e52c0d3b6dfb"
+    },
+    "5": {
+      "green_branch": "bug5_green",
+      "red_branch": "bug5_red",
+      "g1_sha": "74e6a8b2b759917991b94bdd5d851198f74c5201"
+    },
+    "6": {
+      "green_branch": "bug6_green",
+      "red_branch": "bug6_red",
+      "g1_sha": "c6076fafed0e842afa30c43e0e7e0c6cb255b42e"
+    },
+    "7": {
+      "green_branch": "bug7_green",
+      "red_branch": "bug7_red",
+      "g1_sha": "992f71b4b0bd7fbe9fe76626004ea7648e094ed6"
+    },
+    "8": {
+      "green_branch": "bug8_green",
+      "red_branch": "bug8_red",
+      "g1_sha": "7de6b67c892b24d9347add63f637c7346ab068c4"
+    },
+    "9": {
+      "green_branch": "bug9_green",
+      "red_branch": "bug9_red",
+      "g1_sha": "3275d39e35e7862280824c053d6f33f3fc935496"
+    },
+    "10": {
+      "green_branch": "bug10_green",
+      "red_branch": "bug10_red",
+      "g1_sha": "1a7dcd5c78e5a545f5c03792a3b34db9786afb68"
+    },
+    "11": {
+      "green_branch": "bug11_green",
+      "red_branch": "bug11_red",
+      "g1_sha": "84d35d7513deba9a9a83d9797e1d6b239c6f2f4c"
+    },
+    "12": {
+      "green_branch": "bug12_green",
+      "red_branch": "bug12_red",
+      "g1_sha": "e97e2a37f4fca4f090c303014aabee12d714ebbb"
+    },
+    "13": {
+      "green_branch": "bug13_green",
+      "red_branch": "bug13_red",
+      "g1_sha": "67a9ed2c75a88849a8bd115d00c08ec39d8c5d32"
+    },
+    "14": {
+      "green_branch": "bug14_green",
+      "red_branch": "bug14_red",
+      "g1_sha": "4a558907f0d0dab03399e5dda2c503be7a65381e"
+    },
+    "15": {
+      "green_branch": "bug15_green",
+      "red_branch": "bug15_red",
+      "g1_sha": "696d318e46960fa2d88d2f71217b23f97a7a6438"
+    }
+  }
 }
