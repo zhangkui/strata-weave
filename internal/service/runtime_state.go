@@ -77,6 +77,8 @@ func (q *ReviewQueue) Enqueue(recordID string, at time.Time) error {
 	if recordID == "" {
 		return model.ErrInvalidInput
 	}
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	if _, ok := q.queued[recordID]; ok {
 		return model.ErrInvalidState
 	}
