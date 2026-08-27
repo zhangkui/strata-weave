@@ -6,31 +6,31 @@
       "task_type": "bugfix",
       "green_branch": "bug1_green",
       "red_branch": "bug1_red",
-      "g1_sha": "f3bc5d6608f4f7f716c625b88c018f8e451624c1"
+      "g1_sha": "2f54433e092304f13eb032a19608a35e7dfb8255"
     },
     "2": {
       "task_type": "bugfix",
       "green_branch": "bug2_green",
       "red_branch": "bug2_red",
-      "g1_sha": "298cec5f4f6a646744d900da86ff06566a828bf5"
+      "g1_sha": "cc9868f1608e07cc02ecc48807130f29f24aeb21"
     },
     "3": {
       "task_type": "bugfix",
       "green_branch": "bug3_green",
       "red_branch": "bug3_red",
-      "g1_sha": "97d6f79f9d166e3cf8eab3ee196d35c24467b59c"
+      "g1_sha": "023464fa7492ef03f9ba610c4c5218e371ef0d49"
     },
     "4": {
       "task_type": "bugfix",
       "green_branch": "bug4_green",
       "red_branch": "bug4_red",
-      "g1_sha": "a086c22d69d3dca7947bec50e69ce10873f61dcf"
+      "g1_sha": "05f8d36d2a1661c167e2a1d5e2e2ca4ea07284b7"
     },
     "5": {
       "task_type": "bugfix",
       "green_branch": "bug5_green",
       "red_branch": "bug5_red",
-      "g1_sha": "3c44ccd6f3e861880b6e2a75a88c951164f8e59e"
+      "g1_sha": "0a5e1d2d1296ced6b41dd381dbe329f07ea68f4e"
     },
     "6": {
       "task_type": "bugfix",
