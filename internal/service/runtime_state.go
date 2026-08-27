@@ -26,10 +26,13 @@ func (l *TelemetryLedger) Record(o model.Observation) error {
 	if o.UnitID == "" || o.Metric == "" {
 		return model.ErrInvalidInput
 	}
-	l.mu.RLock()
-	defer l.mu.RUnlock()
+	// Record mutates the ledger, so it must hold the write lock; a read lock
+	// would let concurrent batch and single-entry ingests mutate the items map
+	// at the same time, racing on mapassign and losing readings.
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	if l.closed[o.UnitID] {
-		return fmt.Errorf("unit %s telemetry is closed", o.UnitID)
+		return fmt.Errorf("unit %s telemetry is closed: %w", o.UnitID, model.ErrInvalidState)
 	}
 	l.items[o.UnitID] = append(l.items[o.UnitID], o)
 	return nil
