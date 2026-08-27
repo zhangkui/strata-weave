@@ -205,16 +205,19 @@ type AlertLedger struct {
 
 func NewAlertLedger() *AlertLedger { return &AlertLedger{alerts: map[string]model.Alert{}} }
 
+// Upsert records a into the ledger, inserting it when new or replacing the
+// stored copy in place so that lifecycle changes persisted elsewhere (such as
+// a closure) are reflected in the live view. A write lock serializes the
+// concurrent creators that merge into the shared map and order slice.
 func (l *AlertLedger) Upsert(a model.Alert) error {
 	if a.ID == "" {
 		return model.ErrInvalidInput
 	}
-	l.mu.RLock()
-	defer l.mu.RUnlock()
-	if _, exists := l.alerts[a.ID]; exists {
-		return nil
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if _, exists := l.alerts[a.ID]; !exists {
+		l.order = append(l.order, a.ID)
 	}
-	l.order = append(l.order, a.ID)
 	l.alerts[a.ID] = a
 	return nil
 }
