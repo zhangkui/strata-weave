@@ -138,12 +138,12 @@ func (t *DispatchTracker) Transition(sampleID, next string, at time.Time) error 
 	if sampleID == "" || next == "" {
 		return model.ErrInvalidInput
 	}
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	current := t.states[sampleID]
 	if current == next {
 		return nil
 	}
-	t.mu.Lock()
-	defer t.mu.Unlock()
 	if current != "" && !validDispatchTransition(current, next) {
 		return model.ErrInvalidState
 	}
