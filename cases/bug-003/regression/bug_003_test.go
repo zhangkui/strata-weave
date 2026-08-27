@@ -1,5 +1,0 @@
-package regression
-
-import("context";"database/sql";"fmt";"path/filepath";"strata-weave/internal/model";"strata-weave/internal/service";"strata-weave/internal/store";"sync";"testing")
-func setupBug003(t *testing.T)(*service.Service,*sql.DB){t.Helper();db,e:=store.Open(filepath.Join(t.TempDir(),"field.db"));if e!=nil{t.Fatal(e)};t.Cleanup(func(){_=db.Close()});app:=service.New(db);if _,e=app.CreateTrench(context.Background(),model.Trench{ID:"t1",Code:"T-1",Site:"Ridge"});e!=nil{t.Fatal(e)};if _,e=app.CreateUnit(context.Background(),model.Unit{ID:"u1",TrenchID:"t1",Code:"U-1",Phase:1});e!=nil{t.Fatal(e)};f,e:=app.CreateFind(context.Background(),model.Find{ID:"f1",UnitID:"u1",CatalogueNo:"CAT-1",Kind:"ceramic"});if e!=nil{t.Fatal(e)};if e=app.ReviewFind(context.Background(),f.ID);e!=nil{t.Fatal(e)};return app,db}
-func TestBug003_DispatchTrackerConcurrentCollection(t *testing.T){app,_:=setupBug003(t);var wg sync.WaitGroup;for n:=0;n<24;n++{wg.Add(1);go func(n int){defer wg.Done();_,_=app.CreateSample(context.Background(),model.Sample{ID:fmt.Sprintf("s-%d",n),FindID:"f1",Label:fmt.Sprintf("bag-%d",n)})}(n)};wg.Wait()}

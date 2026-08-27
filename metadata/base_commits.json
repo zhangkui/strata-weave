@@ -6,91 +6,91 @@
       "task_type": "bugfix",
       "green_branch": "bug1_green",
       "red_branch": "bug1_red",
-      "g1_sha": "cd82ae811a2eb26434e2be98642eaddcbb5d739a"
+      "g1_sha": "f3bc5d6608f4f7f716c625b88c018f8e451624c1"
     },
     "2": {
       "task_type": "bugfix",
       "green_branch": "bug2_green",
       "red_branch": "bug2_red",
-      "g1_sha": "ba627bb540b89423d488e09cf0abdeeb1fdfafae"
+      "g1_sha": "298cec5f4f6a646744d900da86ff06566a828bf5"
     },
     "3": {
       "task_type": "bugfix",
       "green_branch": "bug3_green",
       "red_branch": "bug3_red",
-      "g1_sha": "99e24c0d9860ffcd50225f8bf2d2141d97c7a496"
+      "g1_sha": "97d6f79f9d166e3cf8eab3ee196d35c24467b59c"
     },
     "4": {
       "task_type": "bugfix",
       "green_branch": "bug4_green",
       "red_branch": "bug4_red",
-      "g1_sha": "6af3c271ea0c338825a079561274c5dbde301b1c"
+      "g1_sha": "a086c22d69d3dca7947bec50e69ce10873f61dcf"
     },
     "5": {
       "task_type": "bugfix",
       "green_branch": "bug5_green",
       "red_branch": "bug5_red",
-      "g1_sha": "391a826d2539ec4f582f5dba2be18bf1b3dceb1d"
+      "g1_sha": "3c44ccd6f3e861880b6e2a75a88c951164f8e59e"
     },
     "6": {
       "task_type": "bugfix",
       "green_branch": "bug6_green",
       "red_branch": "bug6_red",
-      "g1_sha": "487af962fbcce93749f10c2ec5b5e957ec6cd9d4"
+      "g1_sha": "bbfb719b7d177934dae7be9f46d9db183b9c0311"
     },
     "7": {
       "task_type": "bugfix",
       "green_branch": "bug7_green",
       "red_branch": "bug7_red",
-      "g1_sha": "7114be7c7fb1ab9c6da47edacd979c91a992ac67"
+      "g1_sha": "03c1013d3726c0fde9490c12b680cf9294502232"
     },
     "8": {
       "task_type": "bugfix",
       "green_branch": "bug8_green",
       "red_branch": "bug8_red",
-      "g1_sha": "fe57535d0ff71d96c5a7853d5627a58d0dc44690"
+      "g1_sha": "a6d27e265d0af0e4c3beb60df81f1314755058d2"
     },
     "9": {
       "task_type": "bugfix",
       "green_branch": "bug9_green",
       "red_branch": "bug9_red",
-      "g1_sha": "905d226fb1cf29cb418837ce10373eac6c9c3dc3"
+      "g1_sha": "b239bc4d687345ecaf4b8fa3b3bc1df6f8098fc6"
     },
     "10": {
       "task_type": "diagnosis",
       "green_branch": "bug10_green",
       "red_branch": "bug10_red",
-      "g1_sha": "3642d9efd7d83d09bd73dc9657af05142c0dd802"
+      "g1_sha": "6f5ca9d7c8a680eb28a0b9e9f4a702a1d582c308"
     },
     "11": {
       "task_type": "diagnosis",
       "green_branch": "bug11_green",
       "red_branch": "bug11_red",
-      "g1_sha": "ebd3b6e952bc38c4ee8b498f90b99e8e934a6ad5"
+      "g1_sha": "5d1abb55023a315c0bd0377c91712b1a4445c5ba"
     },
     "12": {
       "task_type": "diagnosis",
       "green_branch": "bug12_green",
       "red_branch": "bug12_red",
-      "g1_sha": "952887afbc5b6680d86ca8342b1a26671fd7322b"
+      "g1_sha": "6469d9e804246ff61bad0240be29f9f6b15763bf"
     },
     "13": {
       "task_type": "diagnosis",
       "green_branch": "bug13_green",
       "red_branch": "bug13_red",
-      "g1_sha": "2944ff67567be8e9a971d2e40507d937929db478"
+      "g1_sha": "5d6b2a6d7d4f8c91aa3fa0ec9a5e4a6ced99142c"
     },
     "14": {
       "task_type": "diagnosis",
       "green_branch": "bug14_green",
       "red_branch": "bug14_red",
-      "g1_sha": "f6505c3bd14b89b19d9fea84cf2f1f062c5e156b"
+      "g1_sha": "d548a8fe3d3915f2c6512487a2238c9542b86fae"
     },
     "15": {
       "task_type": "diagnosis",
       "green_branch": "bug15_green",
       "red_branch": "bug15_red",
-      "g1_sha": "aeaeab524035754690eb972df275f96ec051ed34"
+      "g1_sha": "f5ef858530f2372e0f3e8d23bac4465a074791ac"
     }
   }
 }
